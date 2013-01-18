@@ -1,16 +1,11 @@
 package com.mti.rfid.minime.bt;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.UUID;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,8 +25,6 @@ import android.widget.TextView;
 
 public class MiniMeBtActivity extends Activity {
 	static boolean DEBUG = true;
-	static final String SPP_UUID = "00001101-0000-1000-8000-00805F9B34FB";
-	static final UUID uuid = UUID.fromString(SPP_UUID);
 	static final String TAG = "MINIMEBT";
 	static final int REQUEST_ENABLE_BT = 1;
 	
@@ -39,18 +32,9 @@ public class MiniMeBtActivity extends Activity {
 	private TextView tv_response, et_send;
 	private Button btn_toggle, btn_connect, btn_discover, btn_discoverable, btn_send, btn_clear, btn_exit;
 	private Spinner sp_found;
+	
+	private BtCommunication mBtComm = new BtCommunication();
 
-	BluetoothAdapter mBtAdapter;
-	BluetoothSocket mBtSocket;
-	InputStream mBtInStream;
-	OutputStream mBtOutStream;
-	
-	AcceptThread acceptThread;
-	ConnectThread connectThread;
-	ConnectedThread connectedThread;
-	
-	boolean sppConnected = false;
-	String devAddr = null;
 	private String msg = "";
 	
 	ArrayList<String> mListDevices = new ArrayList<String>();
@@ -92,22 +76,15 @@ public class MiniMeBtActivity extends Activity {
         sp_found.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-				devAddr = ((String)mListDevices.get(position)).split(" \\| ")[1];
+				mBtComm.devSelection(((String)mListDevices.get(position)).split(" \\| ")[1]);
 				adapterView.setVisibility(View.VISIBLE);
-//				Toast.makeText(MiniMeBtActivity.this, "please select your bluetooth device: " + adapterView.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-//				Toast.makeText(MiniMeBtActivity.this, "there is no bluetooth device.", Toast.LENGTH_LONG).show();
 			}
         });
 
-        if(!mBtAdapter.isEnabled()) {
-        	mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-        	Log.d(TAG, "bluetooth adapter enable");
-        }
-       
         /* register bluetooth broadcast */
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_FOUND);
@@ -143,170 +120,15 @@ public class MiniMeBtActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-/*
-		if(connectThread != null)
-			connectThread.cancel();
-		Log.d(TAG, "destory 1");
-		if(acceptThread != null)
-			acceptThread.cancel();
-		Log.d(TAG, "destory 2");
+
 		this.unregisterReceiver(mReceiver);
-		Log.d(TAG, "destory 3");
-		if(mBtInStream != null) {
-			try {
-				mBtSocket.close();
-//				mmServerSocket.close();
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
-*/
 	}
 
-	
-	/* ########################## thread ############################# */
-	private class AcceptThread extends Thread {
-		private final BluetoothServerSocket mmServerSocket;
-		
-		public AcceptThread() {
-			BluetoothServerSocket tmp = null;
-			try {
-				tmp = mBtAdapter.listenUsingRfcommWithServiceRecord("spp", uuid);
-			} catch(IOException e) {
-				e.printStackTrace();
-			}
-			mmServerSocket = tmp;
-		}
-		
-		public void run() {
-			mBtSocket = null;
-
-			while(true) {
-				if(DEBUG) Log.d(TAG, "open server socket.");
-				try {
-					mBtSocket = mmServerSocket.accept();
-				} catch(IOException e) {
-					e.printStackTrace();
-					Log.w(TAG, "server socket accept failed.");
-					break;
-				}
-	
-				if(mBtSocket != null) {
-					connectedThread = new ConnectedThread(mBtSocket);
-					connectedThread.start();
-					try {
-						mmServerSocket.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-						Log.w(TAG, "accept fail");
-					}
-				}
-			}
-		}
-		
-		public void cancel() {
-			try {
-				mmServerSocket.close();
-			} catch(IOException e) {
-				e.printStackTrace();
-				Log.e(TAG, "close sever socket failed");
-			}
-		}
-	}
-	
-	
-	private class ConnectThread extends Thread {
-		
-		public ConnectThread() {
-			try {
-				mBtSocket = mBtAdapter.getRemoteDevice(devAddr).createRfcommSocketToServiceRecord(uuid);
-				if(DEBUG) Log.d(TAG, "connect thread constructor successed");
-			} catch (IOException e) {
-				e.printStackTrace();
-				Log.e(TAG, "connect Thread constructor failed");
-			}
-		}
-		
-		public void run() {
-			mBtAdapter.cancelDiscovery();
-			
-			try {
-				mBtSocket.connect();
-			} catch (IOException eConnection) {
-				try {
-					mBtSocket.close();
-					eConnection.printStackTrace();
-				} catch (IOException eClose) {
-					eClose.printStackTrace();
-				}
-				return;
-			}
-			
-			connectedThread = new ConnectedThread(mBtSocket);
-			connectedThread.start();
-		}
-		
-		public void cancel() {
-			try {
-				mBtSocket.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	
-	private class ConnectedThread extends Thread {
-		public ConnectedThread(BluetoothSocket socket) {
-			
-			try {
-				mBtInStream = socket.getInputStream();
-				mBtOutStream = socket.getOutputStream();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-			if(DEBUG) Log.d(TAG, "inStream: " + mBtInStream.toString() + ", outStream: " + mBtOutStream.toString());
-		}
-		
-		public void run() {
-			byte[] buffer = new byte[1024];
-			int bytes = 0;
-			
-			while(true) {
-				try {
-					bytes = mBtInStream.read(buffer);
-					if(DEBUG) Log.d(TAG, "spp receiver");
-					if(bytes > 0) {
-						msg = new String(buffer, 0, bytes, "ascii") + "\n";
-						btHandler.sendEmptyMessage(0);
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-					Log.e(TAG, "spp receiver disconnect");
-					disconnect();
-					break;
-				}
-			}
-		}
-	}
-	
-	
-	private void disconnect() {
-		sp_found.setClickable(true);
-		sppConnected = false;
-		mBtInStream = null;
-		mBtOutStream = null;
-//		acceptThread = new AcceptThread();
-//		acceptThread.start();
-		Log.e(TAG, "disconnect");
-	}
-	
 	
 	Handler btHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message inputMessage) {
-			tv_response.append(msg);
+			tv_response.append(BtCommunication.msg);
 			sv_response.fullScroll(ScrollView.FOCUS_DOWN);
 		}
 	};
@@ -317,12 +139,12 @@ public class MiniMeBtActivity extends Activity {
 	private Button.OnClickListener btn_toggle_listener = new Button.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			if(mBtAdapter.isEnabled()) {
-				if(connectThread != null)
-					connectThread.cancel();
-				if(acceptThread != null)
-					acceptThread.cancel();
-				mBtAdapter.disable();
+			if(mBtComm.getBtAdapter().isEnabled()) {
+				if(mBtComm.getConnectThread() != null)
+					mBtComm.cancelConnectThread();
+				if(mBtComm.getAcceptThread() != null)
+					mBtComm.cancelAcceptThread();
+				mBtComm.getBtAdapter().disable();
 			} else {
 				Intent enBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 				startActivityForResult(enBtIntent, REQUEST_ENABLE_BT);
@@ -335,8 +157,8 @@ public class MiniMeBtActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			mAdapterDevice.clear();
-			mBtAdapter.cancelDiscovery();
-			mBtAdapter.startDiscovery();
+			mBtComm.getBtAdapter().cancelDiscovery();
+			mBtComm.getBtAdapter().startDiscovery();
 		}
 	};
 	
@@ -344,8 +166,7 @@ public class MiniMeBtActivity extends Activity {
 	private Button.OnClickListener btn_connect_listener = new Button.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			connectThread = new ConnectThread();
-			connectThread.start();
+			mBtComm.createConnectThread();
 		}
 	};
 
@@ -356,9 +177,8 @@ public class MiniMeBtActivity extends Activity {
 			Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 			discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120);
 			startActivity(discoverableIntent);
-	        if(mBtAdapter != null) {
-		        acceptThread = new AcceptThread();
-		        acceptThread.start();
+	        if(mBtComm.getBtAdapter() != null) {
+	        	mBtComm.createAcceptThread();
 	        }
 
 		}
@@ -371,8 +191,9 @@ public class MiniMeBtActivity extends Activity {
 			try {
 				tv_response.append(et_send.getText().toString() + "\n");
 				sv_response.fullScroll(ScrollView.FOCUS_DOWN);
-				mBtOutStream.write(et_send.getText().toString().getBytes());
+				mBtComm.getOutputStream().write(et_send.getText().toString().getBytes());
 				et_send.setText("");
+//				btHandler.sendEmptyMessage(0);
 			} catch(IOException e) {
 				e.printStackTrace();
 			}
