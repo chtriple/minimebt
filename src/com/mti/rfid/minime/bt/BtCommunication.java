@@ -12,22 +12,22 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
 public class BtCommunication extends Application {
-	private static boolean DEBUG = true;
+	private static final boolean DEBUG = true;
 	private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 	private static final String TAG = "MINIMEBT";
 
-	private static BluetoothAdapter mBtAdapter;
-	private static BluetoothSocket mBtSocket;
+	private BluetoothAdapter mBtAdapter;
+	private BluetoothSocket mBtSocket;
 	private static InputStream mBtInStream;
 	private static OutputStream mBtOutStream;
 	
-	private static AcceptThread acceptThread;
-	private static ConnectThread connectThread;
-	private static ConnectedThread connectedThread;
+	private AcceptThread acceptThread;
+	private ConnectThread connectThread;
+	private ConnectedThread connectedThread;
 
-	private static boolean sppConnected = false;
-	private static String mDevAddr = null;
-	public static String msg;
+	private boolean sppConnected = false;
+	private String mDevAddr = null;
+	public  String msg;
 
 	public BtCommunication() {
     	mBtAdapter = BluetoothAdapter.getDefaultAdapter();

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="hello">Hello World, MINIMEBTActivity!</string>
     <string name="app_name">MINIMEBT</string>
     <string name="btn_connect">Connect</string>
     <string name="btn_discover">Discover</string>
@@ -10,5 +8,9 @@
     <string name="btn_clear">Clear</string>
     <string name="btn_send">Send</string>
     <string name="btn_exit">Exit</string>
+    <string name="item_tag">INVENTORY</string>
+    <string name="item_config">CONFIG</string>
+    <string name="item_about">ABOUT</string>
+    <string name="item_bluetooth">BLUETOOTH</string>
 
 </resources>

@@ -45,7 +45,7 @@ public class MiniMeBtActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.main_test);
         
         /* gui setting */
         sv_response = (ScrollView)findViewById(R.id.sv_response);
@@ -128,7 +128,7 @@ public class MiniMeBtActivity extends Activity {
 	Handler btHandler = new Handler(Looper.getMainLooper()) {
 		@Override
 		public void handleMessage(Message inputMessage) {
-			tv_response.append(BtCommunication.msg);
+			tv_response.append(msg);
 			sv_response.fullScroll(ScrollView.FOCUS_DOWN);
 		}
 	};
