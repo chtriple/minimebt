@@ -188,15 +188,17 @@ public class MiniMeBtActivity extends Activity {
 	private Button.OnClickListener btn_send_listener = new Button.OnClickListener() {
 		@Override
 		public void onClick(View v) {
+/*
 			try {
 				tv_response.append(et_send.getText().toString() + "\n");
 				sv_response.fullScroll(ScrollView.FOCUS_DOWN);
-				mBtComm.getOutputStream().write(et_send.getText().toString().getBytes());
+				mBtComm.write(et_send.getText().toString().getBytes());
 				et_send.setText("");
 //				btHandler.sendEmptyMessage(0);
 			} catch(IOException e) {
 				e.printStackTrace();
 			}
+*/
 		}
 	};
 	

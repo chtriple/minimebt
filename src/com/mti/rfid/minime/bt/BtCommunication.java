@@ -143,8 +143,10 @@ public class BtCommunication extends Application {
 			
 			while(true) {
 				try {
-					bytes = mBtInStream.read(buffer);
 					if(DEBUG) Log.d(TAG, "spp receiver");
+					bytes = mBtInStream.read(buffer);
+					
+					if(DEBUG) Log.d(TAG, String.format("%2x %2x %2x", buffer[0], buffer[1], buffer[2]));
 					if(bytes > 0) {
 						msg = new String(buffer, 0, bytes, "ascii") + "\n";
 					}
@@ -172,10 +174,6 @@ public class BtCommunication extends Application {
 	/* ################## public methods #################### */
 	public BluetoothAdapter getBtAdapter() {
 		return mBtAdapter;
-	}
-	
-	public OutputStream getOutputStream() {
-		return mBtOutStream;
 	}
 	
 	public void devSelection(String devAddr) {
@@ -213,5 +211,34 @@ public class BtCommunication extends Application {
 	
 	public ConnectThread getConnectThread() {
 		return connectThread;
+	}
+
+	public void sendCmd(byte[] cmd) {
+		try {
+			mBtOutStream.write(cmd);
+		} catch (IOException e) {
+			e.printStackTrace();
+			Log.e(TAG, "send command error");
+		}
+	}
+
+	public byte[] getResponse() {
+		byte[] buffer = new byte[8];
+		int bytes = 0;
+		
+		try {
+			Log.d(TAG, "function getResponse()");
+			bytes = mBtInStream.read(buffer);
+			if(DEBUG) Log.d(TAG, "spp receiver");
+			if(bytes > 0) {
+				msg = new String(buffer, 0, bytes, "ascii") + "\n";
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			Log.e(TAG, "spp receiver disconnect");
+			disconnect();
+		}
+		
+		return buffer;
 	}
 }

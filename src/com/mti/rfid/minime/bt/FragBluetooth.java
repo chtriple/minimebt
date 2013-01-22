@@ -28,9 +28,9 @@ public class FragBluetooth extends ListFragment {
 	private ArrayAdapter<String> aaBtDevice;
 	
 	private View vFragment;
-	private TextView tv_readerstatus;
+//	private TextView tv_readerstatus;
 
-	private BtCommunication mBtComm = new BtCommunication();
+	private BtCommunication mBtComm = MainActivity.getBtComm();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

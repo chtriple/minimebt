@@ -15,10 +15,12 @@ public class MainActivity extends Activity {
 	private static final String TAG = "MINIMEBT";
 	private TextView tv_readerstatus;
 	
-	private enum Fragments {About, Bluetooth, Config, Detail, Tag, Web};
+	private enum Fragments {About, Bluetooth, Config, Detail, Inventory, Web};
 	private FragmentTransaction ft;
 	private Fragment objFragment;
 
+	protected static BtCommunication mBtComm = new BtCommunication();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,6 +49,7 @@ public class MainActivity extends Activity {
 			case R.id.item_config:
 				break;
 			case R.id.item_tag:
+				toggleFragment(Fragments.Inventory, 0, null);
 				break;
 		}
 		return super.onMenuItemSelected(featureId, item);
@@ -64,7 +67,8 @@ public class MainActivity extends Activity {
 				break;
 			case Detail:
 				break;
-			case Tag:
+			case Inventory:
+				objFragment = new FragInventory();
 				break;
 			case Web:
 				break;
@@ -74,5 +78,9 @@ public class MainActivity extends Activity {
 		ft.replace(R.id.fl_maincontainer, objFragment);
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
 		ft.commit();
+	}
+	
+	public static BtCommunication getBtComm() {
+		return mBtComm;
 	}
 }

@@ -12,5 +12,6 @@
     <string name="item_config">CONFIG</string>
     <string name="item_about">ABOUT</string>
     <string name="item_bluetooth">BLUETOOTH</string>
+    <string name="btn_inventory">Inventory</string>
 
 </resources>
