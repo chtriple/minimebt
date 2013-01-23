@@ -28,4 +28,8 @@ public final class Crc16 {
 		
 		return work;
 	}
+	
+	public static boolean check(byte[] bytes, int length) {
+		return (calculate(bytes, length) == 0x1d0f);
+	}
 }

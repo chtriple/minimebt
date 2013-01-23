@@ -1,6 +1,7 @@
 package com.mti.rfid.minime.bt;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import android.util.Log;
 
@@ -54,6 +55,8 @@ public abstract class CmdMti {
 
 	private static final int CMD_LENGTH = 64;
 	private static final int RESPONSE_LENGTH = 64;
+	private static final byte[] cmdHeader = {(byte)0x4d, (byte)0x54, (byte)0x49, (byte)0x43, (byte)0x00};
+	protected static final int headerSize = cmdHeader.length;
 	
 	private BtCommunication mBtComm = MainActivity.getBtComm();
 
@@ -72,40 +75,44 @@ public abstract class CmdMti {
 	
 	protected void composeCmd() {
 		int cmdLength = 0;
+		byte[] command;
+		mSendCmd = Arrays.copyOfRange(cmdHeader, 0, 64);
 		
-		mSendCmd[0] = (byte)0x4d;
-		mSendCmd[1] = (byte)0x54;
-		mSendCmd[2] = (byte)0x49;
-		mSendCmd[3] = (byte)0x43;
-		mSendCmd[4] = (byte)0xff;
-		
-		mSendCmd[5] = mCmdHead.get1stCmd();
-		mSendCmd[6] = (byte)(mParam.size() + 2);
+		mSendCmd[headerSize] = mCmdHead.get1stCmd();
+		mSendCmd[headerSize+1] = (byte)(mParam.size() + 2);
 		
 		for(int i = 0; i < mParam.size(); i++) {
-			mSendCmd[i+7] = mParam.get(i).byteValue();
-			cmdLength = i + 8;
+			mSendCmd[headerSize+2+i] = mParam.get(i).byteValue();
 		}
-
+		
+		cmdLength = headerSize + 2 + mParam.size();
 		int Crc = ~Crc16.calculate(mSendCmd, cmdLength);
 		mSendCmd[cmdLength] = (byte)((Crc & 0x0000ff00) >>> 8);
 		mSendCmd[cmdLength+1] = (byte)((Crc & 0x000000ff));
 		
-		mBtComm.sendCmd(mSendCmd);
+		command = Arrays.copyOfRange(mSendCmd, 0, cmdLength + 2);
+		mBtComm.sendCmd(command);
 		
 		// #### log whole command for debug ####
-		if(DEBUG) Log.d(TAG, "TX: " + strCmd(mSendCmd));
+		if(DEBUG) Log.d(TAG, "TX: " + strCmd(command));
 	}
 
 	
 	public boolean checkStatus() {
 		boolean result = false;
 		
-		getDataFromStream();
+//		getDataFromStream();
+		Response response = mBtComm.getResponse();
+		if(response.getStatus()) {
+			mResponse = response.getData();
+			if(DEBUG) Log.d(TAG, "RX: " + strCmd(mResponse));
+		} else
+			return false;
+		
 		mStatus = mResponse[7];
 		getStatus();
 		
-		if(mResponse[0] == mSendCmd[0] + 1) {
+		if(mResponse[5] == mSendCmd[5] + 1) {
 			if(mStatus == 0x00)
 				result = true;
 			else
@@ -116,7 +123,7 @@ public abstract class CmdMti {
 		return result;
 	}
 
-	
+/*	
 	private byte[] getDataFromStream() {
 		mResponse = mBtComm.getResponse();
 		
@@ -124,7 +131,7 @@ public abstract class CmdMti {
 		if(DEBUG) Log.d(TAG, "RX: " + strCmd(mResponse));
 		return mResponse;
 	}
-
+*/
 	
 	public byte[] getResponse() {
 		return mResponse;

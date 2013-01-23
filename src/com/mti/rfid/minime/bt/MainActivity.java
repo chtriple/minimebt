@@ -13,7 +13,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 	private static final boolean DEBUG = false;
 	private static final String TAG = "MINIMEBT";
-	private TextView tv_readerstatus;
+	private static TextView tv_readerstatus;
 	
 	private enum Fragments {About, Bluetooth, Config, Detail, Inventory, Web};
 	private FragmentTransaction ft;
@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
         tv_readerstatus = (TextView)findViewById(R.id.tv_readerstatus);
+        setConnectionStatus(mBtComm.checkConnectionStatus());
 	}
 
 	@Override
@@ -82,5 +83,10 @@ public class MainActivity extends Activity {
 	
 	public static BtCommunication getBtComm() {
 		return mBtComm;
+	}
+	
+	public static void setConnectionStatus(boolean status) {
+    	tv_readerstatus.setText(status ? "Connected" : "Disconnected");
+		tv_readerstatus.setTextColor(status ? android.graphics.Color.GREEN : android.graphics.Color.RED);
 	}
 }

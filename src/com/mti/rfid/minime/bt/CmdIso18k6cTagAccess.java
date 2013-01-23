@@ -263,23 +263,23 @@ public class CmdIso18k6cTagAccess {
 		}
 		
 		public int getSensivity() {
-			return mResponse[14];
+			return mResponse[headerSize+14];
 		}
 		
 		public int getLinkFrequency() {
-			return mResponse[4];
+			return mResponse[headerSize+4];
 		}
 		
 		public int getSession() {
-			return mResponse[8];
+			return mResponse[headerSize+8];
 		}
 		
 		public int getCoding() {
-			return mResponse[6];
+			return mResponse[headerSize+6];
 		}
 		
 		public int getQBegin() {
-			return mResponse[12];
+			return mResponse[headerSize+12];
 		}
 	}
 	
@@ -300,24 +300,24 @@ public class CmdIso18k6cTagAccess {
 			mParam.clear();
 			mParam.add(action.bAction);
 			composeCmd();
-			if(action.equals(Action.StartInventory))
-				delay(100);
-			else
-				delay(50);
+//			if(action.equals(Action.StartInventory))
+//				delay(100);
+//			else
+//				delay(50);
 			
 			return checkStatus();
 		}
 
 		public byte getTagNumber() {
-			return mResponse[3];
+			return mResponse[headerSize+3];
 		}
 		
 		public String getTagId() {
-			int iEpcLength = mResponse[4] - 2;	// #### minus 2 bytes, bcz epc data = pc + epc ####
+			int iEpcLength = mResponse[headerSize+4] - 2;	// #### minus 2 bytes, bcz epc data = pc + epc ####
 			byte[] tagId = new byte[iEpcLength > 0 ? iEpcLength : 0];
 			
 			for(int i = 0; i < iEpcLength; i++) {
-				tagId[i] = mResponse[i + 7];
+				tagId[i] = mResponse[headerSize+i+7];
 			}
 			return strCmd(tagId);
 		}

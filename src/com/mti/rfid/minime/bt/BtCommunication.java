@@ -9,7 +9,11 @@ import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
+import android.widget.ScrollView;
 
 public class BtCommunication extends Application {
 	private static final boolean DEBUG = true;
@@ -133,8 +137,9 @@ public class BtCommunication extends Application {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+		
 			if(DEBUG) Log.d(TAG, "inStream: " + mBtInStream.toString() + ", outStream: " + mBtOutStream.toString());
+			btHandler.sendEmptyMessage(0);
 		}
 		
 		public void run() {
@@ -172,6 +177,12 @@ public class BtCommunication extends Application {
 		Log.e(TAG, "disconnect");
 	}
 
+	Handler btHandler = new Handler(Looper.getMainLooper()) {
+		@Override
+		public void handleMessage(Message inputMessage) {
+			MainActivity.setConnectionStatus(true);
+		}
+	};
 	
 	/* ################## public methods #################### */
 	public BluetoothAdapter getBtAdapter() {
@@ -224,19 +235,31 @@ public class BtCommunication extends Application {
 		}
 	}
 
-	public byte[] getResponse() {
-		byte[] buffer = new byte[64];
+	public Response getResponse() {
 		int bytes = 0;
+		byte[] buffer = new byte[64];
+		Response response = null;
 		
 		try {
 			bytes = mBtInStream.read(buffer);
-			Crc16.calculate(buffer, bytes);
+			response = new Response(buffer, bytes);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Log.e(TAG, "spp receiver disconnect");
 			disconnect();
 		}
 		
-		return buffer;
+		return response;
+	}
+	
+	public boolean checkConnectionStatus() {
+        if(mBtAdapter.isEnabled())
+        	try{
+        		if(mBtSocket.isConnected())
+        			return true;
+        	} catch(Exception e) {
+        		Log.e(TAG, "the connection of bluetooth socket is not available");
+        	}
+        return false;
 	}
 }
