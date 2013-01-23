@@ -138,12 +138,13 @@ public class BtCommunication extends Application {
 		}
 		
 		public void run() {
+/*
 			byte[] buffer = new byte[64];
 			int bytes = 0;
-			
+
 			while(true) {
 				try {
-					if(DEBUG) Log.d(TAG, "spp receiver");
+					if(DEBUG) Log.d(TAG, "spp receiver before");
 					bytes = mBtInStream.read(buffer);
 					
 					if(DEBUG) Log.d(TAG, String.format("%2x %2x %2x", buffer[0], buffer[1], buffer[2]));
@@ -157,6 +158,7 @@ public class BtCommunication extends Application {
 					break;
 				}
 			}
+*/
 		}
 	}
 	
@@ -223,16 +225,12 @@ public class BtCommunication extends Application {
 	}
 
 	public byte[] getResponse() {
-		byte[] buffer = new byte[8];
+		byte[] buffer = new byte[64];
 		int bytes = 0;
 		
 		try {
-			Log.d(TAG, "function getResponse()");
 			bytes = mBtInStream.read(buffer);
-			if(DEBUG) Log.d(TAG, "spp receiver");
-			if(bytes > 0) {
-				msg = new String(buffer, 0, bytes, "ascii") + "\n";
-			}
+			Crc16.calculate(buffer, bytes);
 		} catch (IOException e) {
 			e.printStackTrace();
 			Log.e(TAG, "spp receiver disconnect");
