@@ -205,6 +205,10 @@ public class CmdIso18k6cTagAccess {
 			mCmdHead = CmdHead.RFID_18K6CSetQueryParameter;
 		}
 
+		public static RFID_18K6CSetQueryParameter newInstance() {
+			return new RFID_18K6CSetQueryParameter(); 
+		}
+		
 		public boolean setCmd(LinkFreqSet linkFreqSet, LinkFreqValue linkFreqValue,
 								MillerSet millerSet, MillerValue millerValue,
 								SessionSet sessionSet, SessionValue sessionValue,
@@ -297,7 +301,7 @@ public class CmdIso18k6cTagAccess {
 		}
 		
 		public boolean setCmd(Action action) {
-			mParam.clear();
+//			mParam.clear();
 			mParam.add(action.bAction);
 			composeCmd();
 //			if(action.equals(Action.StartInventory))
@@ -336,6 +340,10 @@ public class CmdIso18k6cTagAccess {
 			mCmdHead = CmdHead.RFID_18K6CTagInventoryRSSI;
 		}
 
+		public static RFID_18K6CTagInventoryRSSI newInstance() {
+			return new RFID_18K6CTagInventoryRSSI(); 
+		}
+
 		public boolean setCmd(Action action) {
 			mParam.add(action.bAction);
 
@@ -353,6 +361,10 @@ public class CmdIso18k6cTagAccess {
 	static final class RFID_18K6CTagSelect extends CmdMti {
 		public RFID_18K6CTagSelect() {
 			mCmdHead = CmdHead.RFID_18K6CTagSelect;
+		}
+
+		public static RFID_18K6CTagSelect newInstance() {
+			return new RFID_18K6CTagSelect(); 
 		}
 
 		public boolean setCmd(byte[] maskData) {
@@ -377,6 +389,10 @@ public class CmdIso18k6cTagAccess {
 			mCmdHead = CmdHead.RFID_18K6CTagRead;
 		}
 
+		public static RFID_18K6CTagRead newInstance() {
+			return new RFID_18K6CTagRead(); 
+		}
+
 		public boolean setCmd(MemoryBank memoryBank, byte memoryAddress, long accessPassword, byte tagDataLength) {
 			mParam.add(memoryBank.bMemoryBank);
 			mParam.add(memoryAddress);
@@ -398,6 +414,10 @@ public class CmdIso18k6cTagAccess {
 	static final class RFID_18K6CTagWrite extends CmdMti {
 		public RFID_18K6CTagWrite() {
 			mCmdHead = CmdHead.RFID_18K6CTagWrite;
+		}
+
+		public static RFID_18K6CTagWrite newInstance() {
+			return new RFID_18K6CTagWrite(); 
 		}
 
 		public boolean setCmd(MemoryBank memoryBank, byte memoryAddress, long accessPassword, byte[] tagData) {
@@ -425,6 +445,10 @@ public class CmdIso18k6cTagAccess {
 			mCmdHead = CmdHead.RFID_18K6CTagKill;
 		}
 
+		public static RFID_18K6CTagKill newInstance() {
+			return new RFID_18K6CTagKill(); 
+		}
+
 		public boolean setCmd(long accessPassword) {
 			for(int i = 3; i >= 0; i--)
 				mParam.add((byte)(accessPassword >> i * 8));
@@ -443,6 +467,10 @@ public class CmdIso18k6cTagAccess {
 	static final class RFID_18K6CTagLock extends CmdMti {
 		public RFID_18K6CTagLock() {
 			mCmdHead = CmdHead.RFID_18K6CTagLock;
+		}
+
+		public static RFID_18K6CTagLock newInstance() {
+			return new RFID_18K6CTagLock(); 
 		}
 
 		public boolean setCmd(LockAction lockAction, MemorySpace memorySpace, long accessPassword) {
@@ -465,6 +493,10 @@ public class CmdIso18k6cTagAccess {
 	static final class RFID_18K6CTagBlockWrite extends CmdMti {
 		public RFID_18K6CTagBlockWrite() {
 			mCmdHead = CmdHead.RFID_18K6CTagBlockWrite;
+		}
+
+		public static RFID_18K6CTagBlockWrite newInstance() {
+			return new RFID_18K6CTagBlockWrite(); 
 		}
 
 		public boolean setCmd(MemoryBank memoryBank, byte memoryAddress, long accessPassword, byte[] tagData, int delayTime) {
@@ -492,6 +524,10 @@ public class CmdIso18k6cTagAccess {
 			mCmdHead = CmdHead.RFID_18K6CTagNXPCommand;
 		}
 
+		public static RFID_18K6CTagNXPCommand newInstance() {
+			return new RFID_18K6CTagNXPCommand(); 
+		}
+
 		public boolean setCmd(NXPCommand nxpCommand, BitStatus bitStatus, long accessPassword, short configWord) {
 			mParam.add(nxpCommand.bNXPCommand);
 			mParam.add(bitStatus.bBitStatus);
@@ -514,6 +550,10 @@ public class CmdIso18k6cTagAccess {
 	static final class RFID_18K6CTagNXPTriggerEASAlarm extends CmdMti {
 		public RFID_18K6CTagNXPTriggerEASAlarm() {
 			mCmdHead = CmdHead.RFID_18K6CTagNXPTriggerEASAlarm;
+		}
+
+		public static RFID_18K6CTagNXPTriggerEASAlarm newInstance() {
+			return new RFID_18K6CTagNXPTriggerEASAlarm(); 
 		}
 
 		public boolean setCmd() {

@@ -60,7 +60,6 @@ public abstract class CmdMti {
 	
 	private BtCommunication mBtComm = MainActivity.getBtComm();
 
-	
 	private byte mStatus;
 	private String mStrStatus;
 	protected CmdHead mCmdHead;
@@ -71,7 +70,6 @@ public abstract class CmdMti {
 	public CmdMti() {
 		mParam.clear();
 	}
-
 	
 	protected void composeCmd() {
 		int cmdLength = 0;
@@ -148,6 +146,40 @@ public abstract class CmdMti {
 		}
 		return hexResult.toUpperCase();
 	}
+	
+	
+	public String strCmd(byte[] BtoS) {
+		String hexResult = "";
+
+		for (int i = 0; i < BtoS.length; i++) {
+			hexResult += ((BtoS[i] < 0 || BtoS[i] > 15)
+						? Integer.toHexString(0xff & (int)BtoS[i])
+						: "0" + Integer.toHexString(0xff & (int)BtoS[i]))
+						+ ((i == BtoS.length) ? "" : " ");
+		}
+		return hexResult.toUpperCase();
+	}
+	
+
+    public byte[] byteCmd(String StoB) {
+    	String subStr;
+    	int iLength = StoB.length() / 2;
+    	byte[] bytes = new byte[iLength];
+    	
+        for (int i = 0; i < iLength; i++) {
+        	subStr = StoB.substring(2 * i, 2 * i + 2);
+        	bytes[i] = (byte)Integer.parseInt(subStr, 16);
+        }
+        return bytes;
+    }
+    
+	// #### delay ####
+	protected void delay(int milliSecond) {
+		try{
+			Thread.sleep(milliSecond);
+		} catch (InterruptedException e) {}
+	}
+	
 	
 	public String getStatus() {
 		switch(mStatus) {
@@ -244,38 +276,4 @@ public abstract class CmdMti {
 		}
 		return mStrStatus;
 	}
-	
-	
-	public String strCmd(byte[] BtoS) {
-		String hexResult = "";
-
-		for (int i = 0; i < BtoS.length; i++) {
-			hexResult += ((BtoS[i] < 0 || BtoS[i] > 15)
-						? Integer.toHexString(0xff & (int)BtoS[i])
-						: "0" + Integer.toHexString(0xff & (int)BtoS[i]))
-						+ ((i == BtoS.length) ? "" : " ");
-		}
-		return hexResult.toUpperCase();
-	}
-	
-
-    public byte[] byteCmd(String StoB) {
-    	String subStr;
-    	int iLength = StoB.length() / 2;
-    	byte[] bytes = new byte[iLength];
-    	
-        for (int i = 0; i < iLength; i++) {
-        	subStr = StoB.substring(2 * i, 2 * i + 2);
-        	bytes[i] = (byte)Integer.parseInt(subStr, 16);
-        }
-        return bytes;
-    }
-    
-	// #### delay ####
-	protected void delay(int milliSecond) {
-		try{
-			Thread.sleep(milliSecond);
-		} catch (InterruptedException e) {}
-	}
-
 }

@@ -17,19 +17,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
-import android.os.StrictMode;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
-	private static final boolean DEBUG = true;
-	private static final String TAG = "MINIMEBT";
-
-	private BtCommunication mBtComm = MainActivity.getBtComm();
-
-//	private CmdMti mCmdMti;
-
 	private Context context;
 	private Activity activity;
 	private ProgressDialog dialog;

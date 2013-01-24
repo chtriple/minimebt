@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MINIMEBT</string>
+    <string name="app_name">MTI Bluetooth RFID</string>
     <string name="btn_connect">Connect</string>
     <string name="btn_discover">Discover</string>
     <string name="btn_toggle">Toggle</string>
@@ -8,10 +8,22 @@
     <string name="btn_clear">Clear</string>
     <string name="btn_send">Send</string>
     <string name="btn_exit">Exit</string>
+    <string name="btn_inventory">Inventory</string>
     <string name="item_tag">INVENTORY</string>
     <string name="item_config">CONFIG</string>
     <string name="item_about">ABOUT</string>
     <string name="item_bluetooth">BLUETOOTH</string>
-    <string name="btn_inventory">Inventory</string>
+    <string name="about_title">MTI Bluetooth RFID Module</string>
+    <string name="about_company">Manufacturer</string>
+    <string name="about_company_sum">Microelectronic Technology Inc.</string>
+    <string name="about_address">Address</string>
+    <string name="about_address_sum">No. 1, Innovation Road II, Hsinchu 300, Taiwan</string>
+    <string name="about_tel">Phone Number</string>
+    <string name="about_tel_sum">886&#8211;3&#8211;577&#8211;3335</string>
+    <string name="about_web">Web Site</string>
+    <string name="about_web_sum">http://www.mti.com.tw</string>
+    <string name="about_sw_ver">Software Version</string>
+    <string name="about_sw_ver_sum">0.0.5</string>
+    <string name="about_reader_sn">Reader S/N</string>
 
 </resources>

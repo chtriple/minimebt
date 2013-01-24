@@ -27,7 +27,10 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
         tv_readerstatus = (TextView)findViewById(R.id.tv_readerstatus);
-        setConnectionStatus(mBtComm.checkConnectionStatus());
+        if(setConnectionStatus(mBtComm.checkConnectionStatus()))
+			toggleFragment(Fragments.Inventory, 0, null);
+        else
+			toggleFragment(Fragments.Bluetooth, 0, null);
 	}
 
 	@Override
@@ -43,6 +46,7 @@ public class MainActivity extends Activity {
 		switch(item.getItemId())
 		{
 			case R.id.item_about:
+				toggleFragment(Fragments.About, 0, null);
 				break;
 			case R.id.item_bluetooth:
 				toggleFragment(Fragments.Bluetooth, 0, null);
@@ -60,6 +64,7 @@ public class MainActivity extends Activity {
 	private void toggleFragment(Fragments fragmentType, int index, String tagId) {
 		switch(fragmentType) {
 			case About:
+				objFragment = new FragAbout();
 				break;
 			case Bluetooth:
 				objFragment = new FragBluetooth();
@@ -85,8 +90,14 @@ public class MainActivity extends Activity {
 		return mBtComm;
 	}
 	
-	public static void setConnectionStatus(boolean status) {
+	public static boolean checkConnectionStatus() {
+		return setConnectionStatus(mBtComm.checkConnectionStatus());
+	}
+
+	public static boolean setConnectionStatus(boolean status) {
     	tv_readerstatus.setText(status ? "Connected" : "Disconnected");
 		tv_readerstatus.setTextColor(status ? android.graphics.Color.GREEN : android.graphics.Color.RED);
+		
+		return status;
 	}
 }

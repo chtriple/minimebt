@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import android.widget.ScrollView;
 
 public class BtCommunication extends Application {
 	private static final boolean DEBUG = true;

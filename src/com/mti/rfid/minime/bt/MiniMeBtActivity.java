@@ -1,6 +1,5 @@
 package com.mti.rfid.minime.bt;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import android.app.Activity;

@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class FragBluetooth extends ListFragment {
 	private static final boolean DEBUG = true;
@@ -101,6 +100,7 @@ public class FragBluetooth extends ListFragment {
 				if(mBtComm.getAcceptThread() != null)
 					mBtComm.cancelAcceptThread();
 				mBtComm.getBtAdapter().disable();
+				MainActivity.setConnectionStatus(false);
 			} else {
 				Intent enBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 				startActivityForResult(enBtIntent, REQUEST_ENABLE_BT);
@@ -118,7 +118,6 @@ public class FragBluetooth extends ListFragment {
 	        if(mBtComm.getBtAdapter() != null) {
 	        	mBtComm.createAcceptThread();
 	        }
-
 		}
 	};
 	

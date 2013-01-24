@@ -3,8 +3,6 @@ package com.mti.rfid.minime.bt;
 import java.util.ArrayList;
 
 import android.app.ListFragment;
-import android.bluetooth.BluetoothAdapter;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,16 +12,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 public class FragInventory extends ListFragment {
-	private static final boolean DEBUG = true;
-	private static final String TAG = "MINIMEBT";
-
 	protected static ArrayList<String> alTags = new ArrayList<String>();
 	protected static ArrayAdapter<String> aaTags;
 
 	private View vFragment;
 
-	private BtCommunication mBtComm = MainActivity.getBtComm();
-	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,11 +42,11 @@ public class FragInventory extends ListFragment {
 	private Button.OnClickListener btn_inventory_listener = new Button.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-//			if(getUsbState()) {
+			if(MainActivity.checkConnectionStatus()) {
 				aaTags.clear();
 				new InventoryTask(getActivity(), true).execute(20);
-//			} else
-//				Toast.makeText(getActivity(), "The Reader is not connected", Toast.LENGTH_SHORT).show();
+			} else
+				Toast.makeText(getActivity(), "The reader is not connected", Toast.LENGTH_SHORT).show();
 		}
 	};
 
