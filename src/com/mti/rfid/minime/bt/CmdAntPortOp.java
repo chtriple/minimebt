@@ -65,9 +65,7 @@ public class CmdAntPortOp {
 		public boolean setCmd(byte powerLevel) {
 			mParam.add(powerLevel);
 			composeCmd();
-			delay(200);
-
-			return checkStatus();
+			return checkStatus(200);
 		}
 	}
 	
@@ -86,9 +84,7 @@ public class CmdAntPortOp {
 
 		public boolean setCmd() {
 			composeCmd();
-			delay(200);
-			
-			return checkStatus();
+			return checkStatus(200);
 		}
 		
 		public int getPowerLevel() {

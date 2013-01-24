@@ -150,8 +150,7 @@ public class CmdFwAccess {
 	
 				super.composeCmd();
 			}
-			delay(50);
-			return checkStatus();
+			return checkStatus(100);
 		}
 		
 		public byte getData() {

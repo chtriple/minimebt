@@ -234,20 +234,33 @@ public class BtCommunication extends Application {
 		}
 	}
 
-	public Response getResponse() {
-		int bytes = 0;
-		byte[] buffer = new byte[64];
-		Response response = null;
+	Response response; // = null;
+	public Response getResponse(int timeout) {
+		Thread responseThread = new Thread(new Runnable() {
+			int bytes = 0;
+			byte[] buffer = new byte[64];
+			@Override
+			public void run() {
+				try {
+					bytes = mBtInStream.read(buffer);
+					response = new Response(buffer, bytes);
+				} catch (IOException e) {
+//					e.printStackTrace();
+					Log.e(TAG, "spp receiver disconnect");
+//					disconnect();
+				}
+			}
+		});
 		
-		try {
-			bytes = mBtInStream.read(buffer);
-			response = new Response(buffer, bytes);
-		} catch (IOException e) {
-			e.printStackTrace();
-			Log.e(TAG, "spp receiver disconnect");
-			disconnect();
+		synchronized(responseThread) {
+			responseThread.start();
+			try {
+				responseThread.wait(timeout);
+			} catch (InterruptedException e) {
+				response = null;
+				e.printStackTrace();
+			}
 		}
-		
 		return response;
 	}
 	

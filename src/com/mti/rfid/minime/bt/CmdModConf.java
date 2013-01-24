@@ -45,17 +45,13 @@ public class CmdModConf {
 		public boolean setCmd(Region region) {
 			mParam.add(region.bRegion);
 			composeCmd();
-			delay(200);
-			
-			return checkStatus();
+			return checkStatus(200);
 		}
 
 		public boolean setCmd(byte region) {
 			mParam.add(region);
 			composeCmd();
-			delay(200);
-			
-			return checkStatus();
+			return checkStatus(200);
 		}
 	}
 
@@ -74,9 +70,7 @@ public class CmdModConf {
 
 		public boolean setCmd() {
 			composeCmd();
-			delay(200);
-			
-			return checkStatus();
+			return checkStatus(200);
 		}
 
 		public byte getRegion() {

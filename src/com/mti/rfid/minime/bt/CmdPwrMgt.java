@@ -33,9 +33,7 @@ public class CmdPwrMgt {
 			mParam.add(powerState.bPowerState);
 
 			composeCmd();
-			delay(200);
-			
-			return checkStatus();
+			return checkStatus(200);
 		}
 	}
 
@@ -57,9 +55,7 @@ public class CmdPwrMgt {
 			mParam.add(powerState.bPowerState);
 
 			composeCmd();
-			delay(200);
-			
-			return checkStatus();
+			return checkStatus(200);
 		}
 	}
 
@@ -81,9 +77,7 @@ public class CmdPwrMgt {
 			mParam.add(powerState.bPowerState);
 
 			composeCmd();
-			delay(200);
-			
-			return checkStatus();
+			return checkStatus(200);
 		}
 	}
 }

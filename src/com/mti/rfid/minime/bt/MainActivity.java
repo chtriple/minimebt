@@ -52,6 +52,7 @@ public class MainActivity extends Activity {
 				toggleFragment(Fragments.Bluetooth, 0, null);
 				break;
 			case R.id.item_config:
+				toggleFragment(Fragments.Config, 0, null);
 				break;
 			case R.id.item_tag:
 				toggleFragment(Fragments.Inventory, 0, null);
@@ -70,6 +71,7 @@ public class MainActivity extends Activity {
 				objFragment = new FragBluetooth();
 				break;
 			case Config:
+				objFragment = new FragConfig();
 				break;
 			case Detail:
 				break;

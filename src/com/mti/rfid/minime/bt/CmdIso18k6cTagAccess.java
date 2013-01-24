@@ -229,9 +229,7 @@ public class CmdIso18k6cTagAccess {
 			mParam.add(sensivityValue);
 
 			composeCmd();
-			delay(200);
-
-			return checkStatus();
+			return checkStatus(200);
 		}
 		
 		public boolean setCmd(byte linkFreqSet, byte linkFreqValue, byte millerSet, byte millerValue,
@@ -251,9 +249,7 @@ public class CmdIso18k6cTagAccess {
 			mParam.add(sensivityValue);
 
 			composeCmd();
-			delay(200);
-
-			return checkStatus();
+			return checkStatus(200);
 		}
 		
 		public boolean setCmd() {
@@ -261,9 +257,7 @@ public class CmdIso18k6cTagAccess {
 				mParam.add((byte)0x00);
 			
 			composeCmd();
-			delay(200);
-
-			return checkStatus();
+			return checkStatus(200);
 		}
 		
 		public int getSensivity() {
@@ -301,15 +295,14 @@ public class CmdIso18k6cTagAccess {
 		}
 		
 		public boolean setCmd(Action action) {
-//			mParam.clear();
+			mParam.clear();
 			mParam.add(action.bAction);
 			composeCmd();
-//			if(action.equals(Action.StartInventory))
-//				delay(100);
-//			else
-//				delay(50);
+			if(action.equals(Action.StartInventory))
+				return checkStatus(200);
+			else
+				return checkStatus(100);
 			
-			return checkStatus();
 		}
 
 		public byte getTagNumber() {
@@ -348,9 +341,7 @@ public class CmdIso18k6cTagAccess {
 			mParam.add(action.bAction);
 
 			composeCmd();
-			delay(200);
-			
-			return checkStatus();
+			return checkStatus(200);
 		}
 	}
 	
@@ -374,9 +365,7 @@ public class CmdIso18k6cTagAccess {
 				mParam.add(data);
 
 			composeCmd();
-			delay(50);
-			
-			return checkStatus();
+			return checkStatus(50);
 		}
 	}
 	
@@ -401,9 +390,7 @@ public class CmdIso18k6cTagAccess {
 			mParam.add(tagDataLength);
 			
 			composeCmd();
-			delay(200);
-			
-			return checkStatus();
+			return checkStatus(200);
 		}
 	}
 	
@@ -430,9 +417,7 @@ public class CmdIso18k6cTagAccess {
 				mParam.add(data);
 
 			composeCmd();
-			delay(500);
-			
-			return checkStatus();
+			return checkStatus(500);
 		}
 	}
 	
@@ -454,9 +439,7 @@ public class CmdIso18k6cTagAccess {
 				mParam.add((byte)(accessPassword >> i * 8));
 
 			composeCmd();
-			delay(500);
-			
-			return checkStatus();
+			return checkStatus(500);
 		}
 	}
 	
@@ -480,9 +463,7 @@ public class CmdIso18k6cTagAccess {
 				mParam.add((byte)(accessPassword >> i * 8));
 
 			composeCmd();
-			delay(1000);
-			
-			return checkStatus();
+			return checkStatus(1000);
 		}
 	}
 	
@@ -509,9 +490,7 @@ public class CmdIso18k6cTagAccess {
 				mParam.add(data);
 
 			composeCmd();
-			delay(500);
-			
-			return checkStatus();
+			return checkStatus(500);
 		}
 	}
 	
@@ -537,9 +516,7 @@ public class CmdIso18k6cTagAccess {
 				mParam.add((byte)(configWord >> i * 8));
 
 			composeCmd();
-			delay(500);
-			
-			return checkStatus();
+			return checkStatus(500);
 		}
 	}
 	
@@ -558,9 +535,7 @@ public class CmdIso18k6cTagAccess {
 
 		public boolean setCmd() {
 			composeCmd();
-			delay(500);
-			
-			return checkStatus();
+			return checkStatus(500);
 		}
 	}
 }
