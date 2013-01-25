@@ -98,9 +98,11 @@ public abstract class CmdMti {
 	
 	public boolean checkStatus(int timeout) {
 		boolean result = false;
-		
-//		getDataFromStream();
-		Response response = mBtComm.getResponse(timeout);
+		int i = 0;
+		Response response; 
+		do {
+			response = mBtComm.getResponse(timeout);
+		} while(response.equals(null) && i++ < 2);
 		if(response.getStatus()) {
 			mResponse = response.getData();
 			if(DEBUG) Log.d(TAG, "RX: " + strCmd(mResponse));

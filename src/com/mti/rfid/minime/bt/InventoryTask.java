@@ -17,9 +17,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
+	private static final boolean DEBUG = true;
+	private static final String TAG = "MINIMEBT";
+
 	private Context context;
 	private Activity activity;
 	private ProgressDialog dialog;
@@ -96,7 +100,6 @@ public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
 
 		FragInventory.alTags.clear();
     	for(int i = 0; i < scantimes[0]; i++) {
-//    		mMtiCmd = new CmdIso18k6cTagAccess.RFID_18K6CTagInventory();
 			CmdIso18k6cTagAccess.RFID_18K6CTagInventory sendCmd = CmdIso18k6cTagAccess.RFID_18K6CTagInventory.newInstance();
 			
 			if(sendCmd.setCmd(CmdIso18k6cTagAccess.Action.StartInventory)) {
@@ -119,6 +122,7 @@ public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
 					}
 				}
 			} else {
+				Log.d(TAG, "inventory error");
 				// #### process error ####
 			}
     	}

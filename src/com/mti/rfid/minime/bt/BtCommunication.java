@@ -3,6 +3,8 @@ package com.mti.rfid.minime.bt;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import android.app.Application;
@@ -12,6 +14,7 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 
 public class BtCommunication extends Application {
@@ -227,6 +230,7 @@ public class BtCommunication extends Application {
 
 	public void sendCmd(byte[] cmd) {
 		try {
+			mBtInStream.skip(mBtInStream.available());
 			mBtOutStream.write(cmd);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -234,9 +238,9 @@ public class BtCommunication extends Application {
 		}
 	}
 
-	Response response; // = null;
+	private Response response;
 	public Response getResponse(int timeout) {
-		Thread responseThread = new Thread(new Runnable() {
+		final Thread responseThread = new Thread(new Runnable() {
 			int bytes = 0;
 			byte[] buffer = new byte[64];
 			@Override
@@ -245,20 +249,30 @@ public class BtCommunication extends Application {
 					bytes = mBtInStream.read(buffer);
 					response = new Response(buffer, bytes);
 				} catch (IOException e) {
-//					e.printStackTrace();
-					Log.e(TAG, "spp receiver disconnect");
-//					disconnect();
+					response = null;
+					Log.e(TAG, "get response exception");
 				}
 			}
 		});
+
+		TimerTask checkTask = new TimerTask() {
+			public void run() {
+				if(!responseThread.isAlive())
+					responseThread.interrupt();
+			}
+		};
 		
+
 		synchronized(responseThread) {
+			SystemClock.sleep(timeout / 2);
 			responseThread.start();
+//			Timer timer = new Timer();
+//			timer.schedule(checkTask, 50, 50);
 			try {
-				responseThread.wait(timeout);
+				responseThread.wait(timeout / 2);
+//				timer.cancel();
 			} catch (InterruptedException e) {
-				response = null;
-				e.printStackTrace();
+				Log.e(TAG, "thread wait exception");
 			}
 		}
 		return response;

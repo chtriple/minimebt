@@ -44,7 +44,7 @@ public class FragInventory extends ListFragment {
 		public void onClick(View v) {
 			if(MainActivity.checkConnectionStatus()) {
 				aaTags.clear();
-				new InventoryTask(getActivity(), true).execute(20);
+				new InventoryTask(getActivity(), true).execute(10);
 			} else
 				Toast.makeText(getActivity(), "The reader is not connected", Toast.LENGTH_SHORT).show();
 		}

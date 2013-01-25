@@ -302,7 +302,6 @@ public class CmdIso18k6cTagAccess {
 				return checkStatus(200);
 			else
 				return checkStatus(100);
-			
 		}
 
 		public byte getTagNumber() {
