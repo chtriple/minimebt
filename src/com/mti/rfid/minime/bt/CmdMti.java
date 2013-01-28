@@ -60,6 +60,7 @@ public abstract class CmdMti {
 	
 	private BtCommunication mBtComm = MainActivity.getBtComm();
 
+	private static int mTagMode = 0;		// 0:Gen2, 1:Gen2+RSSI, 2:ISO6B
 	private byte mStatus;
 	private String mStrStatus;
 	protected CmdHead mCmdHead;
@@ -182,7 +183,15 @@ public abstract class CmdMti {
 		} catch (InterruptedException e) {}
 	}
 	
+
+	public static void setTagMode(int tagmode) {
+		mTagMode = tagmode;
+	}
 	
+	public static int getTagMode() {
+		return mTagMode;
+	}
+
 	public String getStatus() {
 		switch(mStatus) {
 			case (byte)0x00:

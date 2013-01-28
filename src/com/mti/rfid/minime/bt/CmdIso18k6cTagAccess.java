@@ -364,7 +364,7 @@ public class CmdIso18k6cTagAccess {
 				mParam.add(data);
 
 			composeCmd();
-			return checkStatus(50);
+			return checkStatus(200);
 		}
 	}
 	

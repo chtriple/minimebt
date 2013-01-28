@@ -10,12 +10,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements FragInventory.OnTagSelectedListener{
 	private static final boolean DEBUG = false;
 	private static final String TAG = "MINIMEBT";
 	private static TextView tv_readerstatus;
 	
 	private enum Fragments {About, Bluetooth, Config, Detail, Inventory, Web};
+	private static boolean isPhone;
 	private FragmentTransaction ft;
 	private Fragment objFragment;
 
@@ -27,10 +28,17 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
         tv_readerstatus = (TextView)findViewById(R.id.tv_readerstatus);
-        if(setConnectionStatus(mBtComm.checkConnectionStatus()))
-			toggleFragment(Fragments.Inventory, 0, null);
-        else
-			toggleFragment(Fragments.Bluetooth, 0, null);
+    	
+        isPhone = ((getResources().getConfiguration().smallestScreenWidthDp < 600) ? true : false);
+        
+        if(savedInstanceState == null) {
+	        if(setConnectionStatus(mBtComm.checkConnectionStatus()))
+				toggleFragment(Fragments.Inventory);
+	        else
+				toggleFragment(Fragments.Bluetooth);
+    	} else
+    		setConnectionStatus(mBtComm.checkConnectionStatus());
+    	
 	}
 
 	@Override
@@ -46,23 +54,23 @@ public class MainActivity extends Activity {
 		switch(item.getItemId())
 		{
 			case R.id.item_about:
-				toggleFragment(Fragments.About, 0, null);
+				toggleFragment(Fragments.About);
 				break;
 			case R.id.item_bluetooth:
-				toggleFragment(Fragments.Bluetooth, 0, null);
+				toggleFragment(Fragments.Bluetooth);
 				break;
 			case R.id.item_config:
-				toggleFragment(Fragments.Config, 0, null);
+				toggleFragment(Fragments.Config);
 				break;
 			case R.id.item_tag:
-				toggleFragment(Fragments.Inventory, 0, null);
+				toggleFragment(Fragments.Inventory);
 				break;
 		}
 		return super.onMenuItemSelected(featureId, item);
 	}
 	
 	
-	private void toggleFragment(Fragments fragmentType, int index, String tagId) {
+	private void toggleFragment(Fragments fragmentType) {
 		switch(fragmentType) {
 			case About:
 				objFragment = new FragAbout();
@@ -73,21 +81,45 @@ public class MainActivity extends Activity {
 			case Config:
 				objFragment = new FragConfig();
 				break;
-			case Detail:
-				break;
 			case Inventory:
 				objFragment = new FragInventory();
 				break;
 			case Web:
 				break;
 		}
-		
+		transitionFragment(fragmentType);
+	}
+
+	private void toggleFragment(Fragments fragmentType, String tagId) {
+		switch(fragmentType) {
+			case Detail:
+				objFragment = new FragDetails(tagId);
+				break;
+			case Web:
+				break;
+		}
+		transitionFragment(fragmentType);
+	}
+
+	private void transitionFragment(Fragments fragmentType) {
 		ft = getFragmentManager().beginTransaction();
 		ft.replace(R.id.fl_maincontainer, objFragment);
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+		ft.addToBackStack(null);
 		ft.commit();
 	}
 	
+	
+	@Override
+	public void onTagSelected(String strTag) {
+		toggleFragment(Fragments.Detail, strTag);
+	}
+	
+	@Override
+	public void onTagLongPress(String strTag) {
+		toggleFragment(Fragments.Web, strTag);
+	}
+
 	public static BtCommunication getBtComm() {
 		return mBtComm;
 	}
@@ -101,5 +133,9 @@ public class MainActivity extends Activity {
 		tv_readerstatus.setTextColor(status ? android.graphics.Color.GREEN : android.graphics.Color.RED);
 		
 		return status;
+	}
+	
+	public static boolean isPhone() {
+		return isPhone;
 	}
 }

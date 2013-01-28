@@ -13,14 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class FragConfig extends PreferenceFragment{
-	private static int mTagMode = 0;		// 0:Gen2, 1:Gen2+RSSI, 2:ISO6B
-
 	public PreferenceScreen prefScr;
-	
-	public static FragConfig newInstance() {
-		FragConfig f = new FragConfig();
-		return f;
-	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -159,11 +152,13 @@ public class FragConfig extends PreferenceFragment{
 
 	private void setTagMode() {
 		ListPreference lPref = (ListPreference) prefScr.findPreference("cfg_tag_mode");
+		CmdMti.setTagMode(lPref.findIndexOfValue(lPref.getValue()));
 	}
 
 	private void getTagMode() {
 		ListPreference lPref = (ListPreference) prefScr.findPreference("cfg_tag_mode");
 		
+		lPref.setValueIndex(CmdMti.getTagMode());
 		lPref.setSummary(lPref.getValue());
 	}
 

@@ -16,6 +16,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
@@ -27,7 +29,6 @@ public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
 	private Context context;
 	private Activity activity;
 	private ProgressDialog dialog;
-	private boolean isPhone;
 	private SharedPreferences mSharedpref;
 	
 	private boolean webState;
@@ -39,7 +40,6 @@ public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
 		activity = (Activity)cxt;
 		dialog = new ProgressDialog(context);
 /*
-		isPhone = devType;
 		mSharedpref = PreferenceManager.getDefaultSharedPreferences(context);
 
 		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()     
@@ -72,7 +72,7 @@ public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
 	    dialog.setTitle("Inventory");
 		dialog.setMessage("Searching...");
 		dialog.show();
-//		setOrientationSensor(false);
+		setOrientationSensor(false);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
 		Collections.sort(FragInventory.alTags);
 		FragInventory.aaTags.notifyDataSetChanged();
 		dialog.dismiss();
-//		setOrientationSensor(true);
+		setOrientationSensor(true);
 	}
 
 	@Override
@@ -97,6 +97,7 @@ public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
 	protected Void doInBackground(Integer... scantimes) {
 		int numTags;
 		String tagId;
+		ToneGenerator tg = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
 
 		FragInventory.alTags.clear();
     	for(int i = 0; i < scantimes[0]; i++) {
@@ -105,6 +106,7 @@ public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
 			if(sendCmd.setCmd(CmdIso18k6cTagAccess.Action.StartInventory)) {
 				tagId = sendCmd.getTagId();
 				if(sendCmd.getTagNumber() > 0) {
+					tg.startTone(ToneGenerator.TONE_PROP_BEEP);
 					if(!FragInventory.alTags.contains(tagId)) {
 						FragInventory.alTags.add(tagId);
 						publishProgress(tagId);
@@ -114,6 +116,7 @@ public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
 				
 				for(numTags = sendCmd.getTagNumber(); numTags > 1; numTags--) {
 					if(sendCmd.setCmd(CmdIso18k6cTagAccess.Action.NextTag)) {
+						tg.startTone(ToneGenerator.TONE_PROP_BEEP);
 						tagId = sendCmd.getTagId();
 						if(!FragInventory.alTags.contains(tagId)) {
 							FragInventory.alTags.add(tagId);
@@ -135,16 +138,16 @@ public class InventoryTask extends AsyncTask<Integer, CharSequence, Void> {
 		else {
 			switch(activity.getWindowManager().getDefaultDisplay().getRotation()) {
 				case 0:
-					activity.setRequestedOrientation(isPhone ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+					activity.setRequestedOrientation(MainActivity.isPhone() ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 					break;
 				case 1:
-					activity.setRequestedOrientation(isPhone ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+					activity.setRequestedOrientation(MainActivity.isPhone() ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
 					break;
 				case 2:
-					activity.setRequestedOrientation(isPhone ? ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+					activity.setRequestedOrientation(MainActivity.isPhone() ? ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
 					break;
 				case 3:
-					activity.setRequestedOrientation(isPhone ? ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+					activity.setRequestedOrientation(MainActivity.isPhone() ? ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 					break;
 			}
 		}
