@@ -23,7 +23,7 @@
     <string name="about_web">Web Site</string>
     <string name="about_web_sum">http://www.mti.com.tw</string>
     <string name="about_sw_ver">Software Version</string>
-    <string name="about_sw_ver_sum">0.0.8</string>
+    <string name="about_sw_ver_sum">0.0.9</string>
     <string name="about_reader_sn">Reader S/N</string>
     <string name="cfg_title">CONFIGURATION</string>
     <string name="cfg_mod_conf">Module Configuration</string>
@@ -89,5 +89,6 @@
     <string name="dlg_write_tid_title">Write TID Memory Bank Error</string>
     <string name="dlg_read_user_title">Read User Memory Bank Error</string>
     <string name="dlg_write_user_title">Write User Memory Bank Error</string>
+    <string name="item_exit">EXIT</string>
 
 </resources>

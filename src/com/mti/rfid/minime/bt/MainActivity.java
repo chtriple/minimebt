@@ -3,6 +3,7 @@ package com.mti.rfid.minime.bt;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,7 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements FragInventory.OnTagSelectedListener{
+public class MainActivity extends Activity implements FragInventory.OnTagSelectedListener {
 	private static final boolean DEBUG = false;
 	private static final String TAG = "MINIMEBT";
 	private static TextView tv_readerstatus;
@@ -28,17 +29,16 @@ public class MainActivity extends Activity implements FragInventory.OnTagSelecte
         setContentView(R.layout.main);
 
         tv_readerstatus = (TextView)findViewById(R.id.tv_readerstatus);
-    	
-        isPhone = ((getResources().getConfiguration().smallestScreenWidthDp < 600) ? true : false);
+    	isPhone = ((getResources().getConfiguration().smallestScreenWidthDp < 600) ? true : false);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
         
         if(savedInstanceState == null) {
-	        if(setConnectionStatus(mBtComm.checkConnectionStatus()))
+        	if(setConnectionStatus(mBtComm.checkConnectionStatus()))
 				toggleFragment(Fragments.Inventory);
 	        else
 				toggleFragment(Fragments.Bluetooth);
     	} else
     		setConnectionStatus(mBtComm.checkConnectionStatus());
-    	
 	}
 
 	@Override
@@ -65,10 +65,22 @@ public class MainActivity extends Activity implements FragInventory.OnTagSelecte
 			case R.id.item_tag:
 				toggleFragment(Fragments.Inventory);
 				break;
+			case R.id.item_exit:
+				finish();
 		}
 		return super.onMenuItemSelected(featureId, item);
 	}
 	
+	@Override
+	public void onTagSelected(String strTag) {
+		toggleFragment(Fragments.Detail, strTag);
+	}
+	
+	@Override
+	public void onTagLongPress(String strTag) {
+		toggleFragment(Fragments.Web, strTag);
+	}
+
 	
 	private void toggleFragment(Fragments fragmentType) {
 		switch(fragmentType) {
@@ -84,8 +96,6 @@ public class MainActivity extends Activity implements FragInventory.OnTagSelecte
 			case Inventory:
 				objFragment = new FragInventory();
 				break;
-			case Web:
-				break;
 		}
 		transitionFragment(fragmentType);
 	}
@@ -96,9 +106,10 @@ public class MainActivity extends Activity implements FragInventory.OnTagSelecte
 				objFragment = new FragDetails(tagId);
 				break;
 			case Web:
+				objFragment = new FragWeb(tagId);
 				break;
 		}
-		transitionFragment(fragmentType);
+//		transitionFragment(fragmentType);
 	}
 
 	private void transitionFragment(Fragments fragmentType) {
@@ -109,16 +120,6 @@ public class MainActivity extends Activity implements FragInventory.OnTagSelecte
 		ft.commit();
 	}
 	
-	
-	@Override
-	public void onTagSelected(String strTag) {
-		toggleFragment(Fragments.Detail, strTag);
-	}
-	
-	@Override
-	public void onTagLongPress(String strTag) {
-		toggleFragment(Fragments.Web, strTag);
-	}
 
 	public static BtCommunication getBtComm() {
 		return mBtComm;

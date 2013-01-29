@@ -7,6 +7,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
@@ -17,10 +18,11 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
 
+@SuppressLint("HandlerLeak")
 public class BtCommunication extends Application {
 	private static final boolean DEBUG = true;
-	private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 	private static final String TAG = "MINIMEBT";
+	private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
 	private BluetoothAdapter mBtAdapter;
 	private BluetoothSocket mBtSocket;
@@ -31,7 +33,6 @@ public class BtCommunication extends Application {
 	private ConnectThread connectThread;
 	private ConnectedThread connectedThread;
 
-	private boolean sppConnected = false;
 	private String mDevAddr = null;
 	public  String msg;
 
@@ -48,8 +49,9 @@ public class BtCommunication extends Application {
 			BluetoothServerSocket tmp = null;
 			try {
 				tmp = mBtAdapter.listenUsingRfcommWithServiceRecord("spp", SPP_UUID);
+				if(DEBUG) Log.d(TAG, "accept thread constructor success");
 			} catch(IOException e) {
-				e.printStackTrace();
+				Log.e(TAG, "caccept thread constructor fail");
 			}
 			mmServerSocket = tmp;
 		}
@@ -57,13 +59,12 @@ public class BtCommunication extends Application {
 		public void run() {
 			mBtSocket = null;
 
-			while(true) {
-				if(DEBUG) Log.d(TAG, "open server socket.");
+			while(mBtSocket == null) {
 				try {
 					mBtSocket = mmServerSocket.accept();
+					if(DEBUG) Log.d(TAG, "open server socket success");
 				} catch(IOException e) {
-					e.printStackTrace();
-					Log.w(TAG, "server socket accept failed.");
+					Log.e(TAG, "open server socket failed");
 					break;
 				}
 	
@@ -72,9 +73,9 @@ public class BtCommunication extends Application {
 					connectedThread.start();
 					try {
 						mmServerSocket.close();
+						if(DEBUG) Log.d(TAG, "close server socket success");
 					} catch (IOException e) {
-						e.printStackTrace();
-						Log.w(TAG, "accept fail");
+						Log.e(TAG, "close server socket fail");
 					}
 				}
 			}
@@ -83,9 +84,9 @@ public class BtCommunication extends Application {
 		public void cancel() {
 			try {
 				mmServerSocket.close();
+				if(DEBUG) Log.d(TAG, "close server socket success");
 			} catch(IOException e) {
-				e.printStackTrace();
-				Log.e(TAG, "close sever socket failed");
+				Log.e(TAG, "close server socket fail");
 			}
 		}
 	}
@@ -94,10 +95,10 @@ public class BtCommunication extends Application {
 		private ConnectThread() {
 			try {
 				mBtSocket = mBtAdapter.getRemoteDevice(mDevAddr).createRfcommSocketToServiceRecord(SPP_UUID);
-				if(DEBUG) Log.d(TAG, "connect thread constructor successed");
+				if(DEBUG) Log.d(TAG, "connect thread constructor success");
 			} catch (IOException e) {
 				e.printStackTrace();
-				Log.e(TAG, "connect Thread constructor failed");
+				Log.e(TAG, "connect Thread constructor fail");
 			}
 		}
 		
@@ -106,12 +107,13 @@ public class BtCommunication extends Application {
 			
 			try {
 				mBtSocket.connect();
+				if(DEBUG) Log.d(TAG, "bluetooth socket connect success");
 			} catch (IOException eConnection) {
 				try {
 					mBtSocket.close();
-					eConnection.printStackTrace();
+					Log.d(TAG, "bluetooth socket connect fail");
 				} catch (IOException eClose) {
-					eClose.printStackTrace();
+					Log.d(TAG, "bluetooth socket connect fail");
 				}
 				return;
 			}
@@ -123,8 +125,10 @@ public class BtCommunication extends Application {
 		public void cancel() {
 			try {
 				mBtSocket.close();
+				if(DEBUG) Log.d(TAG, "bluetooth socket connect success");
 			} catch (IOException e) {
 				e.printStackTrace();
+				Log.d(TAG, "bluetooth socket connect fail");
 			}
 		}
 	}
@@ -136,12 +140,13 @@ public class BtCommunication extends Application {
 			try {
 				mBtInStream = socket.getInputStream();
 				mBtOutStream = socket.getOutputStream();
+				btHandler.sendEmptyMessage(0);
+				Log.w(TAG, "bluetooth socket : " + String.valueOf(mBtSocket.isConnected()));
+				Log.w(TAG, "bluetooth remove device : " + mBtSocket.getRemoteDevice().getName());
+				if(DEBUG) Log.d(TAG, "connected thread success");
 			} catch (IOException e) {
-				e.printStackTrace();
+				Log.e(TAG, "connected thread fail");
 			}
-		
-			if(DEBUG) Log.d(TAG, "inStream: " + mBtInStream.toString() + ", outStream: " + mBtOutStream.toString());
-			btHandler.sendEmptyMessage(0);
 		}
 		
 		public void run() {
@@ -171,7 +176,6 @@ public class BtCommunication extends Application {
 	
 	
 	public void disconnect() {
-		sppConnected = false;
 		mBtInStream = null;
 		mBtOutStream = null;
 //		acceptThread = new AcceptThread();
@@ -232,9 +236,10 @@ public class BtCommunication extends Application {
 		try {
 			mBtInStream.skip(mBtInStream.available());
 			mBtOutStream.write(cmd);
+			if(DEBUG) Log.d(TAG, "send command success");
 		} catch (IOException e) {
 			e.printStackTrace();
-			Log.e(TAG, "send command error");
+			Log.e(TAG, "send command fail");
 		}
 	}
 
@@ -248,9 +253,10 @@ public class BtCommunication extends Application {
 				try {
 					bytes = mBtInStream.read(buffer);
 					response = new Response(buffer, bytes);
+					if(DEBUG) Log.d(TAG, "get response success");
 				} catch (IOException e) {
 					response = null;
-					Log.e(TAG, "get response exception");
+					Log.e(TAG, "get response fail");
 				}
 			}
 		});
@@ -281,7 +287,9 @@ public class BtCommunication extends Application {
 	public boolean checkConnectionStatus() {
         if(mBtAdapter.isEnabled())
         	try{
+        		Log.w(TAG, "bluetooth remove device : " + mBtSocket.getRemoteDevice().getName());
         		if(mBtSocket.isConnected())
+//        		if(true)
         			return true;
         	} catch(Exception e) {
         		Log.e(TAG, "the connection of bluetooth socket is not available");

@@ -27,7 +27,6 @@ public class FragDetails extends Fragment implements OnFocusChangeListener {
 	private static final boolean DEBUG = false;
 	private static final String TAG = "MINIMEBT";
 
-//	private int mIndex;
 	private static final String TAG_ID = "mTagId";
 	private String mTagId;
 	
@@ -215,7 +214,6 @@ public class FragDetails extends Fragment implements OnFocusChangeListener {
 			}
 		});
 	}
-
 	
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {

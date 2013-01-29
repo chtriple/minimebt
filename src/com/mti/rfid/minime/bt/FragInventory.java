@@ -54,7 +54,6 @@ public class FragInventory extends ListFragment implements OnItemLongClickListen
         return vFragment;
 	}
 	
-
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -62,9 +61,10 @@ public class FragInventory extends ListFragment implements OnItemLongClickListen
         Button btn_inventory = (Button)vFragment.findViewById(R.id.btn_inventory);
         btn_inventory.setOnClickListener(btn_inventory_listener);
 
+        getListView().setOnItemLongClickListener(this);
+
         mSharedpref = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
 	}
-
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
@@ -83,7 +83,6 @@ public class FragInventory extends ListFragment implements OnItemLongClickListen
 	public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
 	    String strTag = getListTagId(position);
 	    mListener.onTagLongPress(strTag.replace(" ", ""));
-
 		return true;
 	}
 

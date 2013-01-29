@@ -110,10 +110,10 @@ public abstract class CmdMti {
 		} else
 			return false;
 		
-		mStatus = mResponse[7];
+		mStatus = mResponse[headerSize+2];
 		getStatus();
 		
-		if(mResponse[5] == mSendCmd[5] + 1) {
+		if(mResponse[headerSize] == mSendCmd[headerSize] + 1) {
 			if(mStatus == 0x00)
 				result = true;
 			else
@@ -142,9 +142,9 @@ public abstract class CmdMti {
 		String hexResult = "";
 
 		for (int i = 0; i < length * 2; i++) {
-			hexResult += ((mResponse[i + 4] < 0 || mResponse[i + 4] > 15)
-						? Integer.toHexString(0xff & (int)mResponse[i + 4])
-						: "0" + Integer.toHexString(0xff & (int)mResponse[i + 4]))
+			hexResult += ((mResponse[headerSize+i+4] < 0 || mResponse[headerSize+i+4] > 15)
+						? Integer.toHexString(0xff & (int)mResponse[headerSize+i+4])
+						: "0" + Integer.toHexString(0xff & (int)mResponse[headerSize+i+4]))
 						+ (( i % 2 == 1) ? " " : "");
 		}
 		return hexResult.toUpperCase();
@@ -175,14 +175,6 @@ public abstract class CmdMti {
         }
         return bytes;
     }
-    
-	// #### delay ####
-	protected void delay(int milliSecond) {
-		try{
-			Thread.sleep(milliSecond);
-		} catch (InterruptedException e) {}
-	}
-	
 
 	public static void setTagMode(int tagmode) {
 		mTagMode = tagmode;
