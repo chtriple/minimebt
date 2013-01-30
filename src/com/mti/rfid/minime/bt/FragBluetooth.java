@@ -19,15 +19,20 @@ import android.widget.Button;
 import android.widget.ListView;
 
 public class FragBluetooth extends ListFragment {
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static final String TAG = "MINIMEBT";
 	private static final int REQUEST_ENABLE_BT = 1;
+	private static final int DISCOVERABLE_BT = 2;
 	
-	private ArrayList<String> alBtDevice = new ArrayList<String>();
-	private ArrayAdapter<String> aaBtDevice;
+	private static ArrayList<String> alBtDevice = new ArrayList<String>();
+	private static ArrayAdapter<String> aaBtDevice;
 	
 	private View vFragment;
-
+	private Button btn_toggle;
+	private Button btn_discoverable;
+	private Button btn_discover;
+	private Button btn_disconnect;
+	
 	private BtCommunication mBtComm = MainActivity.getBtComm();
 
 	@Override
@@ -58,15 +63,20 @@ public class FragBluetooth extends ListFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-        Button btn_toggle = (Button)vFragment.findViewById(R.id.btn_toggle);
-        Button btn_discoverable = (Button)vFragment.findViewById(R.id.btn_discoverable);
-        Button btn_discover = (Button)vFragment.findViewById(R.id.btn_discover);
-        Button btn_connect = (Button)vFragment.findViewById(R.id.btn_connect);
+        btn_toggle = (Button)vFragment.findViewById(R.id.btn_toggle);
+        btn_discoverable = (Button)vFragment.findViewById(R.id.btn_discoverable);
+        btn_discover = (Button)vFragment.findViewById(R.id.btn_discover);
+        btn_disconnect = (Button)vFragment.findViewById(R.id.btn_disconnect);
 
         btn_toggle.setOnClickListener(btn_toggle_listener);
         btn_discoverable.setOnClickListener(btn_discoverable_listener);
         btn_discover.setOnClickListener(btn_discover_listener);
-        btn_connect.setOnClickListener(btn_connect_listener);
+        btn_disconnect.setOnClickListener(btn_disconnect_listener);
+        
+        if(mBtComm.checkConnectionStatus())
+        	setButtonStatus(false, false, true);
+        else
+        	setButtonStatus(true, true, false);
 	}
 
 
@@ -79,13 +89,43 @@ public class FragBluetooth extends ListFragment {
 
 
 	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		switch (requestCode) {
+			case REQUEST_ENABLE_BT:
+	        	setButtonStatus(true, true, false);
+				if(DEBUG) Log.d(TAG, "REQUEST_ENABLE_BT");
+				break;
+			case DISCOVERABLE_BT:
+				if(resultCode == 120 && mBtComm.getBtAdapter() != null)
+			        mBtComm.createAcceptThread();
+
+				if(mBtComm.getBtAdapter().isEnabled())
+					setButtonStatus(true, true, false);
+		        else
+		        	setButtonStatus(true, false, false);
+
+		        if(DEBUG) Log.d(TAG, "DISCOVERABLE_BT");
+		        break;
+		}
+	}
+
+
+	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		
-		mBtComm.devSelection(((String)alBtDevice.get(position)).split(" \\| ")[1]);
+		String strDevice = (String)alBtDevice.get(position);
+		mBtComm.devSelection((strDevice).split(" \\| ")[1]);
 		mBtComm.createConnectThread();
-	}
+		setButtonStatus(false, false, true);
+		
+		alBtDevice.clear();
+		alBtDevice.add(strDevice);
+		aaBtDevice.notifyDataSetChanged();
 
+	}
 
 
 	/* ############################# button listener ################################## */
@@ -94,12 +134,10 @@ public class FragBluetooth extends ListFragment {
 		@Override
 		public void onClick(View v) {
 			if(mBtComm.getBtAdapter().isEnabled()) {
-				if(mBtComm.getConnectThread() != null)
-					mBtComm.cancelConnectThread();
-				if(mBtComm.getAcceptThread() != null)
-					mBtComm.cancelAcceptThread();
+				mBtComm.disconnect();
 				mBtComm.getBtAdapter().disable();
 				MainActivity.setConnectionStatus(false);
+	        	setButtonStatus(true, false, false);
 			} else {
 				Intent enBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 				startActivityForResult(enBtIntent, REQUEST_ENABLE_BT);
@@ -111,11 +149,12 @@ public class FragBluetooth extends ListFragment {
 	private Button.OnClickListener btn_discoverable_listener = new Button.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-			discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120);
-			startActivity(discoverableIntent);
-	        if(mBtComm.getBtAdapter() != null) {
-	        	mBtComm.createAcceptThread();
+	        if(mBtComm.checkConnectionStatus()) {
+				setButtonStatus(false, false, true);
+	        } else {
+				Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+				discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120);
+				startActivityForResult(discoverableIntent, DISCOVERABLE_BT);
 	        }
 		}
 	};
@@ -124,21 +163,33 @@ public class FragBluetooth extends ListFragment {
 	private Button.OnClickListener btn_discover_listener = new Button.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			aaBtDevice.clear();
-			mBtComm.getBtAdapter().cancelDiscovery();
-			mBtComm.getBtAdapter().startDiscovery();
+	        if(mBtComm.checkConnectionStatus()) {
+				setButtonStatus(false, false, true);
+	        } else {
+				aaBtDevice.clear();
+				mBtComm.getBtAdapter().cancelDiscovery();
+				mBtComm.getBtAdapter().startDiscovery();
+				setButtonStatus(true, true, false);
+	        }
 		}
 	};
 	
-	/* connect to device */
-	private Button.OnClickListener btn_connect_listener = new Button.OnClickListener() {
+	/* disconnect to device */
+	private Button.OnClickListener btn_disconnect_listener = new Button.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			mBtComm.createConnectThread();
+			mBtComm.disconnect();
+        	setButtonStatus(true, true, false);
 		}
 	};
 	
 
+	private void setButtonStatus(boolean bDiscoverable, boolean bDiscover, boolean bDisconnect) {
+        btn_discoverable.setEnabled(bDiscoverable);
+        btn_discover.setEnabled(bDiscover);
+        btn_disconnect.setEnabled(bDisconnect);
+	}
+	
 	/* ########################### broadcast receiver ############################ */
 	private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 		public void onReceive(Context context, Intent intent) {

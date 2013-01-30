@@ -38,11 +38,11 @@
             android:text="@string/btn_discover" />
 
         <Button
-            android:id="@+id/btn_connect"
+            android:id="@+id/btn_disconnect"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/btn_connect" />
+            android:text="@string/btn_disconnect" />
     </LinearLayout>
 
 </LinearLayout>
