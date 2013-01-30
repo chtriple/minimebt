@@ -9,7 +9,6 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class FragConfig extends PreferenceFragment{

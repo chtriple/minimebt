@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MTI Bluetooth RFID</string>
-    <string name="btn_connect">Connect</string>
-    <string name="btn_discover">Discover</string>
-    <string name="btn_toggle">Toggle</string>
-    <string name="btn_discoverable">Discoverable</string>
+    <string name="btn_toggle">Toggle</string><string name="btn_discoverable">Discoverable</string><string name="btn_discover">Discover</string><string name="btn_disconnect">Disconnect</string>
+    
+    
+    
     <string name="btn_clear">Clear</string>
     <string name="btn_send">Send</string>
     <string name="btn_exit">Exit</string>
     <string name="btn_inventory">Inventory</string>
-    <string name="item_tag">INVENTORY</string>
+    <string name="item_tag">INVENTORY</string><string name="item_bluetooth">BLUETOOTH</string>
     <string name="item_config">CONFIG</string>
     <string name="item_about">ABOUT</string>
-    <string name="item_bluetooth">BLUETOOTH</string>
+    <string name="item_exit">EXIT</string>
     <string name="about_title">ABOUT</string>
     <string name="about_company">Manufacturer</string>
     <string name="about_company_sum">Microelectronic Technology Inc.</string>
@@ -23,7 +23,7 @@
     <string name="about_web">Web Site</string>
     <string name="about_web_sum">http://www.mti.com.tw</string>
     <string name="about_sw_ver">Software Version</string>
-    <string name="about_sw_ver_sum">0.0.9</string>
+    <string name="about_sw_ver_sum">0.1.0</string>
     <string name="about_reader_sn">Reader S/N</string>
     <string name="cfg_title">CONFIGURATION</string>
     <string name="cfg_mod_conf">Module Configuration</string>
@@ -89,6 +89,6 @@
     <string name="dlg_write_tid_title">Write TID Memory Bank Error</string>
     <string name="dlg_read_user_title">Read User Memory Bank Error</string>
     <string name="dlg_write_user_title">Write User Memory Bank Error</string>
-    <string name="item_exit">EXIT</string>
+    
 
 </resources>

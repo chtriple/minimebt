@@ -86,7 +86,7 @@ public class FragInventory extends ListFragment implements OnItemLongClickListen
 		return true;
 	}
 
-	// #### select a tag ####
+	/* select a tag */
 	private boolean onItemSelect(String tagId) {
 		boolean bStatus = false;
 		
@@ -102,13 +102,13 @@ public class FragInventory extends ListFragment implements OnItemLongClickListen
 		return bStatus;
 	}
 	
-	// #### get tag id ####
+	/* get tag id */
 	private String getListTagId(int position) {
 		return alTags.get(position).toString();
 	}
 
 
-	// #### inventory click ####
+	/* inventory click */
 	private Button.OnClickListener btn_inventory_listener = new Button.OnClickListener() {
 		@Override
 		public void onClick(View v) {
