@@ -50,7 +50,7 @@ public abstract class CmdMti {
 	private static final byte[] RFID_EngTransmitSerialPattern		= {(byte)0xE8, 0x07};
 	private static final byte[] RFID_EngWriteFullOemData			= {(byte)0xEE, 0x05};
 */
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static final String TAG = "MINIMEBT";
 
 	private static final int CMD_LENGTH = 64;
