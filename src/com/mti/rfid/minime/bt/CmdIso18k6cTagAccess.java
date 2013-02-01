@@ -297,7 +297,8 @@ public class CmdIso18k6cTagAccess {
 		public boolean setCmd(Action action) {
 			mParam.clear();
 			mParam.add(action.bAction);
-			composeCmd();
+			if(!composeCmd())
+				return false;
 			if(action.equals(Action.StartInventory))
 				return checkStatus(200);
 			else

@@ -269,7 +269,7 @@ public class FragDetails extends Fragment implements OnFocusChangeListener {
 		}
 	}
 
-    private void openPwdDialog(final int btnres) {		// #### Final ????
+    private void openPwdDialog(final int btnres) {
         LayoutInflater factory = LayoutInflater.from(mView.getContext());
         final View textEntryView = factory.inflate(R.layout.password_dialog, null);
         TextView tv_pwd = (TextView)textEntryView.findViewById(R.id.et_pwd);

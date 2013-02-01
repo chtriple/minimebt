@@ -18,7 +18,7 @@ import android.util.Log;
 
 @SuppressLint("HandlerLeak")
 public class BtCommunication extends Application {
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private static final String TAG = "MINIMEBT";
 	private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -162,14 +162,33 @@ public class BtCommunication extends Application {
 		return connectThread;
 	}
 
-	public void sendCmd(byte[] cmd) {
-		try {
-			synchronized(mBtInStream) {
-				mBtInStream.skip(mBtInStream.available());
+	public boolean sendCmd(byte[] cmd) {
+		final Thread writeThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					synchronized(mBtInStream) {
+						mBtInStream.skip(mBtInStream.available());
+					}
+				} catch (IOException e) {
+					Log.e(TAG, "send command fail");
+				}
 			}
-			mBtOutStream.write(cmd);
-		} catch (IOException e) {
-			Log.w(TAG, "send command fail");
+		});
+
+		synchronized(writeThread) {
+			writeThread.start();
+			try {
+				writeThread.wait(20);
+				mBtOutStream.write(cmd);
+			} catch (InterruptedException e) {
+				Log.e(TAG, "send command wait fail");
+				return false;
+			} catch (IOException e) {
+				Log.e(TAG, "send command fail");
+				return false;
+			}
+			return true;
 		}
 	}
 
@@ -183,6 +202,7 @@ public class BtCommunication extends Application {
 					synchronized(mBtInStream) {
 						bytes = mBtInStream.read(buffer);
 					}
+					if(DEBUG) Log.w(TAG, "get response success"); 
 					mResponse = new Response(buffer, bytes);
 				} catch (IOException e) {
 					mResponse = null;
@@ -209,6 +229,8 @@ public class BtCommunication extends Application {
 				mBtSocket.close();
 		} catch (IOException e) {
 			Log.d(TAG, "bluetooth socket close fail");
+		} catch (Exception e) {
+			Log.d(TAG, "bluetooth socket connect check fail");
 		} finally {
 			MainActivity.checkConnectionStatus();
 		}

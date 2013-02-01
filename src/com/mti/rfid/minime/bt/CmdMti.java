@@ -50,7 +50,7 @@ public abstract class CmdMti {
 	private static final byte[] RFID_EngTransmitSerialPattern		= {(byte)0xE8, 0x07};
 	private static final byte[] RFID_EngWriteFullOemData			= {(byte)0xEE, 0x05};
 */
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	private static final String TAG = "MINIMEBT";
 
 	private static final int CMD_LENGTH = 64;
@@ -72,9 +72,11 @@ public abstract class CmdMti {
 		mParam.clear();
 	}
 	
-	protected void composeCmd() {
+	protected boolean composeCmd() {
 		int cmdLength = 0;
 		byte[] command;
+		boolean bState;
+		
 		mSendCmd = Arrays.copyOfRange(cmdHeader, 0, 64);
 		
 		mSendCmd[headerSize] = mCmdHead.get1stCmd();
@@ -90,10 +92,12 @@ public abstract class CmdMti {
 		mSendCmd[cmdLength+1] = (byte)((Crc & 0x000000ff));
 		
 		command = Arrays.copyOfRange(mSendCmd, 0, cmdLength + 2);
-		mBtComm.sendCmd(command);
+		bState = mBtComm.sendCmd(command);
 		
 		// #### log whole command for debug ####
 		if(DEBUG) Log.d(TAG, "TX: " + strCmd(command));
+		
+		return bState;
 	}
 
 	
