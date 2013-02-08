@@ -300,9 +300,9 @@ public class CmdIso18k6cTagAccess {
 			if(!composeCmd())
 				return false;
 			if(action.equals(Action.StartInventory))
-				return checkStatus(200);
+				return checkStatus(250);
 			else
-				return checkStatus(100);
+				return checkStatus(150);
 		}
 
 		public byte getTagNumber() {

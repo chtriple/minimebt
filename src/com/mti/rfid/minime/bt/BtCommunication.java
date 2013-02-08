@@ -180,6 +180,8 @@ public class BtCommunication extends Application {
 			writeThread.start();
 			try {
 				writeThread.wait(20);
+				if(writeThread.isAlive())
+					writeThread.interrupt();
 				mBtOutStream.write(cmd);
 			} catch (InterruptedException e) {
 				Log.e(TAG, "send command wait fail");
@@ -205,19 +207,21 @@ public class BtCommunication extends Application {
 					if(DEBUG) Log.w(TAG, "get response success"); 
 					mResponse = new Response(buffer, bytes);
 				} catch (IOException e) {
-					mResponse = null;
 					Log.e(TAG, "get response fail");
 				}
 			}
 		});
 
 		synchronized(responseThread) {
-			SystemClock.sleep(timeout / 2);
 			responseThread.start();
 			try {
-				responseThread.wait(timeout / 2);
+				responseThread.wait(timeout);
+				if(responseThread.isAlive())
+					mBtInStream.close();
 			} catch (InterruptedException e) {
 				Log.e(TAG, "response thread wait fail");
+			} catch (IOException e) {
+				Log.e(TAG, "bluetooth input stream fail");
 			}
 		}
 		return mResponse;

@@ -23,7 +23,7 @@
     <string name="about_web">Web Site</string>
     <string name="about_web_sum">http://www.mti.com.tw</string>
     <string name="about_sw_ver">Software Version</string>
-    <string name="about_sw_ver_sum">0.1.0</string>
+    <string name="about_sw_ver_sum">0.1.2</string>
     <string name="about_reader_sn">Reader S/N</string>
     <string name="cfg_title">CONFIGURATION</string>
     <string name="cfg_mod_conf">Module Configuration</string>

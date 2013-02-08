@@ -115,16 +115,16 @@ public class FragBluetooth extends ListFragment {
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		
-		String strDevice = (String)alBtDevice.get(position);
-		mBtComm.devSelection((strDevice).split(" \\| ")[1]);
-		mBtComm.createConnectThread();
-		setButtonStatus(false, false, true);
-		
-		alBtDevice.clear();
-		alBtDevice.add(strDevice);
-		aaBtDevice.notifyDataSetChanged();
-
+		if(!MainActivity.checkConnectionStatus()) {
+			String strDevice = (String)alBtDevice.get(position);
+			mBtComm.devSelection((strDevice).split(" \\| ")[1]);
+			mBtComm.createConnectThread();
+			setButtonStatus(false, false, true);
+			
+			alBtDevice.clear();
+			alBtDevice.add(strDevice);
+			aaBtDevice.notifyDataSetChanged();
+		}
 	}
 
 
